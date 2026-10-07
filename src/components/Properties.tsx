@@ -78,7 +78,7 @@ export default function Properties() {
           <li>Duplo clique edita o texto; no vazio cria um texto.</li>
           <li>Crie <b>frames</b> (F) para montar os slides e clique em <b>Apresentar</b>.</li>
           <li>Botão direito + arrastar move o quadro; Ctrl + rolar dá zoom.</li>
-          <li>Formas 3D isométricas ficam em <b>Mais formas</b>; o botão de grade alterna para a grade isométrica.</li>
+          <li>Mais formas no botão <b>Mais</b> (M) e formas 3D isométricas no botão <b>3D</b> (K), na barra da esquerda. O botão de grade alterna para a grade isométrica.</li>
         </ul>
       </aside>
     )

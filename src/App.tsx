@@ -22,6 +22,7 @@ const SHORTCUTS: [string, string][] = [
   ['V / H', 'Selecionar / mover quadro'],
   ['R O D', 'Retângulo, elipse, decisão'],
   ['S / T', 'Nota adesiva / texto'],
+  ['M / K', 'Mais formas / formas 3D'],
   ['L', 'Conector'],
   ['F', 'Frame (slide)'],
   ['Duplo clique', 'Editar texto · no vazio cria texto'],
@@ -165,6 +166,10 @@ export default function App() {
         const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0
         const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0
         return s.nudge(dx, dy)
+      }
+      if (!e.altKey && !e.shiftKey && (k === 'm' || k === 'k')) {
+        window.dispatchEvent(new CustomEvent('fluxdiag:shape-menu', { detail: k === 'm' ? 'flow' : 'iso' }))
+        return
       }
       if (!e.altKey && !e.shiftKey && TOOL_KEYS[k]) {
         s.setTool(TOOL_KEYS[k])

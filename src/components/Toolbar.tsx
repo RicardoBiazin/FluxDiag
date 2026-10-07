@@ -4,7 +4,7 @@ import type { ShapeKind, Tool } from '../lib/types'
 import { SHAPE_LABELS } from '../lib/model'
 import { Icon, ShapeIcon } from './Icons'
 
-const MORE_SHAPES: ShapeKind[] = [
+const FLOW_SHAPES: ShapeKind[] = [
   'rect',
   'rounded',
   'ellipse',
@@ -15,10 +15,11 @@ const MORE_SHAPES: ShapeKind[] = [
   'document',
   'cylinder',
   'triangle',
-  'isoCube',
-  'isoCylinder',
-  'isoPyramid',
 ]
+
+const ISO_SHAPES: ShapeKind[] = ['isoCube', 'isoCylinder', 'isoPyramid']
+
+type Menu = 'flow' | 'iso' | null
 
 export const TOOL_KEYS: Record<string, Tool> = {
   v: 'select',
@@ -51,25 +52,53 @@ function ToolButton({ tool, label, keyHint, children }: { tool: Tool; label: str
 }
 
 export default function Toolbar() {
-  const [open, setOpen] = useState(false)
-  const [lastShape, setLastShape] = useState<ShapeKind>('rounded')
+  const [open, setOpen] = useState<Menu>(null)
   const tool = useStore((s) => s.tool)
   const setTool = useStore((s) => s.setTool)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (MORE_SHAPES.includes(tool as ShapeKind) && tool !== 'rect' && tool !== 'ellipse' && tool !== 'diamond')
-      setLastShape(tool as ShapeKind)
-  }, [tool])
-
-  useEffect(() => {
     if (!open) return
     const close = (e: PointerEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+      if (!ref.current?.contains(e.target as Node)) setOpen(null)
     }
     window.addEventListener('pointerdown', close)
     return () => window.removeEventListener('pointerdown', close)
   }, [open])
+
+  // Atalhos: M abre "Mais formas", K abre "Formas 3D".
+  useEffect(() => {
+    const onToggle = (e: Event) => setOpen((cur) => ((e as CustomEvent<Menu>).detail === cur ? null : (e as CustomEvent<Menu>).detail))
+    window.addEventListener('fluxdiag:shape-menu', onToggle)
+    return () => window.removeEventListener('fluxdiag:shape-menu', onToggle)
+  }, [])
+
+  const inFlow = FLOW_SHAPES.includes(tool as ShapeKind) && !['rect', 'ellipse', 'diamond'].includes(tool)
+  const inIso = ISO_SHAPES.includes(tool as ShapeKind)
+
+  const menu = (kinds: ShapeKind[], title: string, hint: string) => (
+    <div className="shape-menu" role="menu" aria-label={title}>
+      <div className="shape-menu-title">
+        {title} <span>{hint}</span>
+      </div>
+      {kinds.map((k) => (
+        <button
+          key={k}
+          className={tool === k ? 'active' : ''}
+          title={SHAPE_LABELS[k]}
+          data-testid={`shape-${k}`}
+          onClick={() => {
+            setTool(k)
+            setOpen(null)
+          }}
+        >
+          <ShapeIcon kind={k} size={28} />
+          <span>{SHAPE_LABELS[k].replace(/ \(isométric[oa]\)/, '')}</span>
+        </button>
+      ))}
+      <p className="shape-menu-tip">Clique no quadro para inserir, ou arraste para escolher o tamanho.</p>
+    </div>
+  )
 
   return (
     <div className="toolbar" ref={ref}>
@@ -96,32 +125,32 @@ export default function Toolbar() {
         <ShapeIcon kind="diamond" />
       </ToolButton>
       <div className="tool-more">
-        <ToolButton tool={lastShape} label={SHAPE_LABELS[lastShape]}>
-          <ShapeIcon kind={lastShape} />
-        </ToolButton>
-        <button className="tool-more-btn" title="Mais formas" aria-label="Mais formas" data-testid="more-shapes" onClick={() => setOpen((v) => !v)}>
-          ▸
+        <button
+          className={`tool labeled${inFlow || open === 'flow' ? ' active' : ''}`}
+          title="Mais formas de fluxograma (M)"
+          aria-label="Mais formas"
+          aria-expanded={open === 'flow'}
+          data-testid="more-shapes"
+          onClick={() => setOpen((v) => (v === 'flow' ? null : 'flow'))}
+        >
+          <Icon name="shapes" />
+          <small>Mais</small>
         </button>
-        {open && (
-          <div className="shape-menu">
-            {MORE_SHAPES.map((k) => (
-              <button
-                key={k}
-                className={tool === k ? 'active' : ''}
-                title={SHAPE_LABELS[k]}
-                data-testid={`shape-${k}`}
-                onClick={() => {
-                  setTool(k)
-                  setLastShape(k)
-                  setOpen(false)
-                }}
-              >
-                <ShapeIcon kind={k} size={26} />
-                <span>{SHAPE_LABELS[k]}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {open === 'flow' && menu(FLOW_SHAPES, 'Mais formas', 'M')}
+      </div>
+      <div className="tool-more">
+        <button
+          className={`tool labeled${inIso || open === 'iso' ? ' active' : ''}`}
+          title="Formas 3D isométricas (K)"
+          aria-label="Formas 3D"
+          aria-expanded={open === 'iso'}
+          data-testid="iso-shapes"
+          onClick={() => setOpen((v) => (v === 'iso' ? null : 'iso'))}
+        >
+          <ShapeIcon kind="isoCube" />
+          <small>3D</small>
+        </button>
+        {open === 'iso' && menu(ISO_SHAPES, 'Formas 3D isométricas', 'K')}
       </div>
       <div className="sep" />
       <ToolButton tool="connector" label="Conector" keyHint="l">

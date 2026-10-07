@@ -304,31 +304,56 @@ button:disabled {
   align-items: center;
 }
 
-.tool-more-btn {
-  position: absolute;
-  right: -10px;
-  width: 14px;
-  height: 22px;
-  border: none;
-  background: transparent;
+.tool.labeled {
+  flex-direction: column;
+  height: 46px;
+  gap: 1px;
+}
+
+.tool.labeled small {
   font-size: 10px;
-  color: var(--muted);
-  padding: 0;
+  line-height: 1;
+  font-weight: 600;
 }
 
 .shape-menu {
   position: absolute;
   left: 52px;
-  top: -80px;
-  width: 260px;
+  top: -60px;
+  width: 280px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
-  padding: 6px;
+  padding: 8px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: var(--shadow);
+  z-index: 10;
+}
+
+.shape-menu-title {
+  grid-column: 1 / -1;
+  font-weight: 700;
+  padding: 2px 4px 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.shape-menu-title span {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+.shape-menu-tip {
+  grid-column: 1 / -1;
+  margin: 6px 4px 0;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .shape-menu button {

@@ -184,7 +184,7 @@ test('formas isométricas 3D e grade isométrica', async ({ page }) => {
   await blankDoc(page)
   const b = await canvasBox(page)
   for (const [kind, x] of [['isoCube', 300], ['isoCylinder', 550], ['isoPyramid', 800]] as const) {
-    await page.getByTestId('more-shapes').click()
+    await page.getByTestId('iso-shapes').click()
     await page.getByTestId(`shape-${kind}`).click()
     await page.mouse.click(b.x + x, b.y + 350)
     await page.keyboard.type(kind === 'isoCube' ? 'Servidor' : kind === 'isoCylinder' ? 'Banco' : 'Meta')
@@ -200,6 +200,21 @@ test('formas isométricas 3D e grade isométrica', async ({ page }) => {
   await page.getByTestId('grid-toggle').click()
   await expect(page.locator('#grid-iso')).toHaveCount(0)
   await expect(page.locator('#grid-dots')).toHaveCount(0)
+})
+
+test('menus de formas visíveis e atalhos M/K', async ({ page }) => {
+  await fresh(page)
+  await expect(page.getByTestId('more-shapes')).toBeVisible()
+  await expect(page.getByTestId('iso-shapes')).toBeVisible()
+  await page.getByTestId('more-shapes').click()
+  await expect(page.getByRole('menu', { name: 'Mais formas' })).toBeVisible()
+  await page.screenshot({ path: 'test-results/06-mais-formas.png' })
+  await page.keyboard.press('k')
+  await expect(page.getByRole('menu', { name: 'Formas 3D isométricas' })).toBeVisible()
+  await expect(page.getByRole('menu', { name: 'Mais formas' })).toHaveCount(0)
+  await page.screenshot({ path: 'test-results/07-formas-3d.png' })
+  await page.getByTestId('shape-terminator').or(page.getByTestId('shape-isoCube')).first().click()
+  await expect(page.getByTestId('iso-shapes')).toHaveClass(/active/)
 })
 
 test('sem erros no console', async ({ page }) => {

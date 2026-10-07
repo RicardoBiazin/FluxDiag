@@ -38,6 +38,8 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
       return <svg {...s}><path {...P} d="M6 9l6 6 6-6" /></svg>
     case 'grid':
       return <svg {...s}><path {...P} d="M4 4h16v16H4zM4 12h16M12 4v16" /></svg>
+    case 'shapes':
+      return <svg {...s}><rect {...P} x="3" y="13" width="8" height="8" rx="1" /><circle {...P} cx="17" cy="17" r="4" /><path {...P} d="M12 3l5 8H7z" /></svg>
     case 'grid-iso':
       return <svg {...s}><path {...P} d="M3 7l18 10M3 17L21 7M12 3v18" /></svg>
     case 'magnet':
