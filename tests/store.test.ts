@@ -1,0 +1,77 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+import { useStore } from '../src/store'
+import { emptyDiagram, makeNode } from '../src/lib/model'
+
+const st = () => useStore.getState()
+
+beforeEach(() => {
+  st().loadDocument('t', emptyDiagram('Teste'))
+})
+
+describe('store', () => {
+  it('desfazer e refazer', () => {
+    st().addNode(makeNode('rect', 0, 0))
+    st().addNode(makeNode('rect', 200, 0))
+    expect(st().doc.nodes).toHaveLength(2)
+    st().undo()
+    expect(st().doc.nodes).toHaveLength(1)
+    st().undo()
+    expect(st().doc.nodes).toHaveLength(0)
+    st().redo()
+    expect(st().doc.nodes).toHaveLength(1)
+  })
+  it('um gesto vira um passo de desfazer só', () => {
+    const n = makeNode('rect', 0, 0)
+    st().addNode(n)
+    st().beginGesture()
+    for (let i = 1; i <= 5; i++) st().mutate((d) => ({ ...d, nodes: d.nodes.map((x) => ({ ...x, x: i * 10 })) }))
+    expect(st().doc.nodes[0].x).toBe(50)
+    st().undo()
+    expect(st().doc.nodes[0].x).toBe(0)
+  })
+  it('copiar, colar, duplicar e excluir', () => {
+    const n = makeNode('rect', 0, 0)
+    st().addNode(n)
+    st().copy()
+    st().paste()
+    expect(st().doc.nodes).toHaveLength(2)
+    expect(st().doc.nodes[1].x).toBe(20)
+    st().duplicate()
+    expect(st().doc.nodes).toHaveLength(3)
+    st().selectAll()
+    st().deleteSelection()
+    expect(st().doc.nodes).toHaveLength(0)
+  })
+  it('alinhar e distribuir', () => {
+    const a = makeNode('rect', 0, 0, 100, 50)
+    const b = makeNode('rect', 300, 40, 100, 50)
+    const c = makeNode('rect', 100, 90, 100, 50)
+    for (const n of [a, b, c]) st().addNode(n, false)
+    st().select([a.id, b.id, c.id])
+    st().align('top')
+    expect(st().doc.nodes.every((n) => n.y === 0)).toBe(true)
+    st().distribute('h')
+    const xs = st().doc.nodes.map((n) => n.x).sort((p, q) => p - q)
+    expect(xs).toEqual([0, 150, 300])
+  })
+  it('mover frame leva o conteúdo', () => {
+    const f = makeNode('frame', 0, 0, 500, 300)
+    const inside = makeNode('rect', 50, 50)
+    st().addNode(f, false)
+    st().addNode(inside, false)
+    st().select([f.id])
+    st().nudge(10, 0)
+    const byId = new Map(st().doc.nodes.map((n) => [n.id, n]))
+    expect(byId.get(f.id)!.x).toBe(10)
+    expect(byId.get(inside.id)!.x).toBe(60)
+  })
+  it('ordem dos slides', () => {
+    const f1 = makeNode('frame', 0, 0)
+    const f2 = makeNode('frame', 1000, 0)
+    st().addNode(f1, false)
+    st().addNode(f2, false)
+    expect(st().doc.slides).toEqual([f1.id, f2.id])
+    st().moveSlide(f2.id, -1)
+    expect(st().doc.slides).toEqual([f2.id, f1.id])
+  })
+})
