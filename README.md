@@ -24,7 +24,13 @@ Roda 100% no navegador — sem servidor, sem conta. Os diagramas ficam salvos no
 - **Exportar**: PNG, SVG, slides em PDF (pela janela de impressão) e arquivo `.fluxdiag.json`.
 - Vários diagramas guardados no navegador, modelos prontos, tema claro/escuro.
 
-## Rodar
+## Usar
+
+Dê dois cliques em **`FluxDiag.bat`**. Na primeira vez ele instala as dependências; depois gera o
+site, sobe em http://127.0.0.1:5181 e abre o navegador. Fechar a janela preta encerra. Se já estiver
+rodando, ele só abre o navegador.
+
+## Desenvolvimento
 
 Requer Node.js 20+.
 
