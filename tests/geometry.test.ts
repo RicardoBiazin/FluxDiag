@@ -114,3 +114,25 @@ describe('quebra de texto', () => {
     expect(lines.length).toBeGreaterThan(4)
   })
 })
+
+describe('isométrico', () => {
+  it('cubo tem 3 faces visíveis, cilindro 3 e pirâmide 2', async () => {
+    const { isoFaces } = await import('../src/lib/geometry')
+    expect(isoFaces('isoCube', 140, 160)).toHaveLength(3)
+    expect(isoFaces('isoCylinder', 120, 150)).toHaveLength(3)
+    expect(isoFaces('isoPyramid', 140, 130)).toHaveLength(2)
+    expect(isoFaces('rect', 100, 100)).toBeNull()
+  })
+  it('face de cima respeita 30° (largura/2 · tan 30°)', async () => {
+    const { isoRise } = await import('../src/lib/geometry')
+    expect(isoRise(200, 1000)).toBeCloseTo(100 * Math.tan(Math.PI / 6), 1)
+    expect(isoRise(200, 50)).toBe(20) // limitado pela altura
+  })
+  it('shade clareia e escurece', async () => {
+    const { shade } = await import('../src/lib/geometry')
+    expect(shade('#808080', 1)).toBe('#808080')
+    expect(shade('#808080', 0.5)).toBe('#404040')
+    expect(parseInt(shade('#808080', 1.25).slice(1, 3), 16)).toBeGreaterThan(0x80)
+    expect(shade('none', 0.5)).toBe('none')
+  })
+})

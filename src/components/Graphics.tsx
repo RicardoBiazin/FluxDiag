@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import type { ArrowHead, DiagramEdge, DiagramNode, Diagram, Point } from '../lib/types'
-import { edgeGeometry, shapePath, textBox, type EdgeGeometry } from '../lib/geometry'
+import { edgeGeometry, isoFaces, shade, shapePath, textBox, type EdgeGeometry } from '../lib/geometry'
 import { FONT_FAMILY, wrapText } from '../lib/text'
 
 const LINE_HEIGHT = 1.25
@@ -73,9 +73,22 @@ export const NodeGraphic = memo(function NodeGraphic({ node, hideText, zoom = 1,
   const filter = kind === 'sticky' ? 'url(#fx-shadow)' : kind === 'frame' ? 'url(#fx-frame-shadow)' : undefined
   const isFrame = kind === 'frame'
   const titleSize = Math.min(48, style.fontSize / Math.max(zoom, 0.3))
+  const faces = isoFaces(kind, w, h)
+  const dash = style.dashed ? `${style.strokeWidth * 4} ${style.strokeWidth * 3}` : undefined
   return (
     <g transform={`translate(${node.x} ${node.y})`}>
-      {kind !== 'text' && (
+      {faces?.map((f, i) => (
+        <path
+          key={i}
+          d={f.d}
+          fill={style.fill === 'none' ? 'transparent' : shade(style.fill, f.light)}
+          stroke={style.stroke === 'none' ? 'none' : style.stroke}
+          strokeWidth={style.strokeWidth}
+          strokeDasharray={dash}
+          strokeLinejoin="round"
+        />
+      ))}
+      {kind !== 'text' && !faces && (
         <path
           d={d}
           fill={style.fill === 'none' ? 'transparent' : style.fill}

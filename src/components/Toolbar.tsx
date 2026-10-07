@@ -15,6 +15,9 @@ const MORE_SHAPES: ShapeKind[] = [
   'document',
   'cylinder',
   'triangle',
+  'isoCube',
+  'isoCylinder',
+  'isoPyramid',
 ]
 
 export const TOOL_KEYS: Record<string, Tool> = {

@@ -1,5 +1,5 @@
 import type { ShapeKind } from '../lib/types'
-import { shapePath } from '../lib/geometry'
+import { isoFaces, shapePath } from '../lib/geometry'
 
 const P = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
 
@@ -38,6 +38,8 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
       return <svg {...s}><path {...P} d="M6 9l6 6 6-6" /></svg>
     case 'grid':
       return <svg {...s}><path {...P} d="M4 4h16v16H4zM4 12h16M12 4v16" /></svg>
+    case 'grid-iso':
+      return <svg {...s}><path {...P} d="M3 7l18 10M3 17L21 7M12 3v18" /></svg>
     case 'magnet':
       return <svg {...s}><path {...P} d="M6 4v8a6 6 0 0012 0V4h-4v8a2 2 0 01-4 0V4z" /><path {...P} d="M6 8h4M14 8h4" /></svg>
     case 'sun':
@@ -93,11 +95,17 @@ export function ShapeIcon({ kind, size = 20 }: { kind: ShapeKind; size?: number 
     cylinder: [14, 17],
     sticky: [16, 16],
     terminator: [20, 10],
+    isoCube: [17, 20],
+    isoCylinder: [15, 20],
+    isoPyramid: [18, 17],
   }
   const [w, h] = dims[kind] ?? [18, 12]
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
       <g transform={`translate(${(24 - w) / 2} ${(24 - h) / 2})`}>
+        {isoFaces(kind, w, h)?.map((f, i) => (
+          <path key={i} d={f.d} fill="currentColor" fillOpacity={f.light > 1 ? 0.08 : f.light < 1 ? 0.35 : 0.18} stroke="currentColor" strokeWidth={1.4} strokeLinejoin="round" />
+        )) ?? (
         <path
           d={shapePath(kind, w, h)}
           fill={kind === 'sticky' ? '#ffd43b' : 'none'}
@@ -105,6 +113,7 @@ export function ShapeIcon({ kind, size = 20 }: { kind: ShapeKind; size?: number 
           strokeWidth={1.6}
           strokeLinejoin="round"
         />
+        )}
       </g>
     </svg>
   )

@@ -27,6 +27,7 @@ const SHORTCUTS: [string, string][] = [
   ['Duplo clique', 'Editar texto · no vazio cria texto'],
   ['Enter', 'Editar texto da seleção'],
   ['Ctrl+Enter / Esc', 'Concluir edição'],
+  ['Botão direito + arrastar', 'Mover o quadro'],
   ['Espaço + arrastar', 'Mover o quadro'],
   ['Ctrl + rolar', 'Zoom'],
   ['Shift+1', 'Ver tudo'],
@@ -54,6 +55,7 @@ export default function App() {
   const canRedo = useStore((s) => s.future.length > 0)
   const snapOn = useStore((s) => s.snapToGrid)
   const gridOn = useStore((s) => s.showGrid)
+  const gridType = useStore((s) => s.gridType)
   const [showSlides, setShowSlides] = useState(() => getPref('slides', '1') === '1')
   const [showDocs, setShowDocs] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
@@ -309,8 +311,8 @@ export default function App() {
             <Icon name="fit" size={18} />
           </button>
           <span className="sep-v" />
-          <button className={`icon-btn${gridOn ? ' on' : ''}`} onClick={st.toggleGrid} title="Mostrar grade">
-            <Icon name="grid" size={18} />
+          <button className={`icon-btn${gridOn ? ' on' : ''}`} onClick={st.cycleGrid} title={`Grade: ${!gridOn ? 'desligada' : gridType === 'iso' ? 'isométrica' : 'pontos'} (clique para alternar)`} data-testid="grid-toggle">
+            <Icon name={gridType === 'iso' && gridOn ? 'grid-iso' : 'grid'} size={18} />
           </button>
           <button className={`icon-btn${snapOn ? ' on' : ''}`} onClick={st.toggleSnap} title="Encaixar na grade">
             <Icon name="magnet" size={18} />

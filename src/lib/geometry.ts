@@ -97,6 +97,18 @@ export function shapePath(kind: ShapeKind, w: number, h: number): string {
         `C ${w * 0.75} ${h - wave * 2.2} ${w * 0.5} ${h + wave * 0.6} 0 ${h - wave * 0.6} Z`
       )
     }
+    case 'isoCube': {
+      const t = isoRise(w, h)
+      return `M ${w / 2} 0 L ${w} ${t} L ${w} ${h - t} L ${w / 2} ${h} L 0 ${h - t} L 0 ${t} Z`
+    }
+    case 'isoCylinder': {
+      const ry = isoRy(w, h)
+      return `M 0 ${ry} A ${w / 2} ${ry} 0 0 1 ${w} ${ry} L ${w} ${h - ry} A ${w / 2} ${ry} 0 0 1 0 ${h - ry} Z`
+    }
+    case 'isoPyramid': {
+      const t = isoRise(w, h)
+      return `M ${w / 2} 0 L ${w} ${h - t} L ${w / 2} ${h} L 0 ${h - t} Z`
+    }
     case 'terminator': {
       const r = Math.min(h / 2, w / 2)
       return `M ${r} 0 L ${w - r} 0 A ${r} ${r} 0 0 1 ${w - r} ${h} L ${r} ${h} A ${r} ${r} 0 0 1 ${r} 0 Z`
@@ -119,6 +131,60 @@ function roundedRect(w: number, h: number, r: number): string {
   )
 }
 
+/** Altura que a face de cima de um sólido isométrico ocupa (30° verdadeiros, limitada pela altura). */
+export function isoRise(w: number, h: number): number {
+  return Math.min(w * 0.2887, h * 0.4)
+}
+
+function isoRy(w: number, h: number): number {
+  return Math.min(w * 0.2887, h * 0.3)
+}
+
+export interface IsoFace {
+  d: string
+  /** Fator de luz: >1 clareia, <1 escurece. */
+  light: number
+}
+
+/** Faces visíveis dos sólidos isométricos, com a luz vindo de cima/esquerda. */
+export function isoFaces(kind: ShapeKind, w: number, h: number): IsoFace[] | null {
+  if (kind === 'isoCube') {
+    const t = isoRise(w, h)
+    return [
+      { d: `M ${w / 2} 0 L ${w} ${t} L ${w / 2} ${2 * t} L 0 ${t} Z`, light: 1.25 },
+      { d: `M 0 ${t} L ${w / 2} ${2 * t} L ${w / 2} ${h} L 0 ${h - t} Z`, light: 1 },
+      { d: `M ${w / 2} ${2 * t} L ${w} ${t} L ${w} ${h - t} L ${w / 2} ${h} Z`, light: 0.72 },
+    ]
+  }
+  if (kind === 'isoCylinder') {
+    const ry = isoRy(w, h)
+    return [
+      { d: `M 0 ${ry} L 0 ${h - ry} A ${w / 2} ${ry} 0 0 0 ${w / 2} ${h} L ${w / 2} ${ry * 2} A ${w / 2} ${ry} 0 0 1 0 ${ry} Z`, light: 1 },
+      { d: `M ${w / 2} ${ry * 2} L ${w / 2} ${h} A ${w / 2} ${ry} 0 0 0 ${w} ${h - ry} L ${w} ${ry} A ${w / 2} ${ry} 0 0 1 ${w / 2} ${ry * 2} Z`, light: 0.72 },
+      { d: `M 0 ${ry} A ${w / 2} ${ry} 0 1 1 ${w} ${ry} A ${w / 2} ${ry} 0 1 1 0 ${ry} Z`, light: 1.25 },
+    ]
+  }
+  if (kind === 'isoPyramid') {
+    const t = isoRise(w, h)
+    return [
+      { d: `M ${w / 2} 0 L 0 ${h - t} L ${w / 2} ${h} Z`, light: 1.05 },
+      { d: `M ${w / 2} 0 L ${w / 2} ${h} L ${w} ${h - t} Z`, light: 0.72 },
+    ]
+  }
+  return null
+}
+
+/** Clareia (f > 1) ou escurece (f < 1) uma cor #rrggbb. */
+export function shade(hex: string, f: number): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return hex
+  const n = parseInt(m[1], 16)
+  const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) =>
+    Math.round(f >= 1 ? c + (255 - c) * (f - 1) * 1.6 : c * f),
+  )
+  return '#' + ch.map((c) => Math.max(0, Math.min(255, c)).toString(16).padStart(2, '0')).join('')
+}
+
 /** Área útil para o texto dentro da forma (coordenadas locais). */
 export function textBox(kind: ShapeKind, w: number, h: number): Rect {
   switch (kind) {
@@ -137,6 +203,17 @@ export function textBox(kind: ShapeKind, w: number, h: number): Rect {
       return { x: 8, y: 4, w: w - 16, h: h * 0.82 }
     case 'sticky':
       return { x: 12, y: 12, w: w - 24, h: h - 24 }
+    // Sólidos: rótulo na face de cima; na pirâmide, logo abaixo da base.
+    case 'isoCube': {
+      const t = isoRise(w, h)
+      return { x: w * 0.18, y: t * 0.4, w: w * 0.64, h: t * 1.2 }
+    }
+    case 'isoCylinder': {
+      const ry = isoRy(w, h)
+      return { x: w * 0.12, y: ry * 0.3, w: w * 0.76, h: ry * 1.4 }
+    }
+    case 'isoPyramid':
+      return { x: -w * 0.25, y: h + 4, w: w * 1.5, h: 28 }
     default:
       return { x: 8, y: 4, w: w - 16, h: h - 8 }
   }

@@ -74,6 +74,7 @@ export default function Canvas() {
   const camera = useStore((s) => s.camera)
   const editingId = useStore((s) => s.editingId)
   const showGrid = useStore((s) => s.showGrid)
+  const gridType = useStore((s) => s.gridType)
 
   const byId = useMemo(() => new Map(doc.nodes.map((n) => [n.id, n])), [doc.nodes])
   const selSet = useMemo(() => new Set(selection), [selection])
@@ -143,7 +144,6 @@ export default function Canvas() {
   }
 
   const onPointerDown = (ev: React.PointerEvent) => {
-    if (ev.button === 2) return
     const st = useStore.getState()
     if (st.editingId) {
       // Clique fora do editor de texto: o blur do editor salva.
@@ -155,8 +155,8 @@ export default function Canvas() {
     const kind = el?.dataset.kind
     const id = el?.dataset.id
 
-    // Mão: botão do meio, ferramenta mão ou espaço.
-    if (ev.button === 1 || st.tool === 'hand' || spaceDown) {
+    // Mão: botão direito ou do meio, ferramenta mão ou espaço.
+    if (ev.button === 1 || ev.button === 2 || st.tool === 'hand' || spaceDown) {
       gesture.current = { type: 'pan', start: { x: ev.clientX, y: ev.clientY }, cam: { x: st.camera.x, y: st.camera.y } }
       rerender()
       return
@@ -481,7 +481,11 @@ export default function Canvas() {
   }
 
   const gridSize = 20 * z
-  const showDots = showGrid && gridSize >= 6
+  const showDots = showGrid && gridType === 'dots' && gridSize >= 6
+  // Grade isométrica: linhas a ±30° e verticais; o ladrilho tem largura s·√3 e altura s.
+  const isoS = 40 * z
+  const isoW = isoS * Math.sqrt(3)
+  const showIso = showGrid && gridType === 'iso' && isoS >= 10
 
   return (
     <div
@@ -513,6 +517,28 @@ export default function Canvas() {
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid-dots)" />
+          </>
+        )}
+        {showIso && (
+          <>
+            <defs>
+              <pattern
+                id="grid-iso"
+                width={isoW}
+                height={isoS}
+                patternUnits="userSpaceOnUse"
+                x={camera.x % isoW}
+                y={camera.y % isoS}
+              >
+                <path
+                  d={`M 0 0 L ${isoW} ${isoS} M 0 ${isoS} L ${isoW} 0 M 0 0 V ${isoS}`}
+                  stroke="var(--grid-dot)"
+                  strokeWidth={0.8}
+                  fill="none"
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-iso)" />
           </>
         )}
         <g transform={`translate(${camera.x} ${camera.y}) scale(${z})`}>

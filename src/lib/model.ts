@@ -18,6 +18,9 @@ export const SHAPE_LABELS: Record<ShapeKind, string> = {
   cylinder: 'Banco de dados',
   document: 'Documento',
   terminator: 'Início/Fim',
+  isoCube: 'Cubo 3D (isométrico)',
+  isoCylinder: 'Cilindro 3D (isométrico)',
+  isoPyramid: 'Pirâmide 3D (isométrica)',
   sticky: 'Nota adesiva',
   text: 'Texto',
   frame: 'Frame (slide)',
@@ -34,6 +37,9 @@ export const DEFAULT_SIZE: Record<ShapeKind, [number, number]> = {
   cylinder: [120, 110],
   document: [160, 90],
   terminator: [160, 60],
+  isoCube: [140, 160],
+  isoCylinder: [120, 150],
+  isoPyramid: [140, 130],
   sticky: [180, 180],
   text: [200, 40],
   frame: [960, 540],
@@ -70,6 +76,10 @@ export function defaultNodeStyle(kind: ShapeKind): NodeStyle {
       return { ...base, fill: '#ffffff', stroke: '#adb5bd', strokeWidth: 1, fontSize: 14 }
     case 'diamond':
       return { ...base, fill: '#fff3bf', stroke: '#f08c00' }
+    case 'isoCube':
+    case 'isoCylinder':
+    case 'isoPyramid':
+      return { ...base, fill: '#74c0fc', stroke: '#1864ab', strokeWidth: 1.5 }
     case 'terminator':
       return { ...base, fill: '#d3f9d8', stroke: '#2f9e44' }
     case 'cylinder':

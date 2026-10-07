@@ -163,6 +163,45 @@ test('zoom com Ctrl+roda e ver tudo', async ({ page }) => {
   await expect(page.getByTestId('zoom-value')).toHaveText(before!)
 })
 
+test('botão direito arrasta o quadro', async ({ page }) => {
+  await fresh(page)
+  const b = await canvasBox(page)
+  const layer = page.locator('[data-testid=canvas] svg > g').first()
+  const before = await layer.getAttribute('transform')
+  await page.mouse.move(b.x + 500, b.y + 400)
+  await page.mouse.down({ button: 'right' })
+  await page.mouse.move(b.x + 650, b.y + 480, { steps: 6 })
+  await page.mouse.up({ button: 'right' })
+  const after = await layer.getAttribute('transform')
+  expect(after).not.toBe(before)
+  const nums = (t: string | null) => t!.match(/-?[\d.]+/g)!.map(Number)
+  expect(nums(after)[0] - nums(before)[0]).toBeCloseTo(150, 0)
+  expect(nums(after)[1] - nums(before)[1]).toBeCloseTo(80, 0)
+})
+
+test('formas isométricas 3D e grade isométrica', async ({ page }) => {
+  await fresh(page)
+  await blankDoc(page)
+  const b = await canvasBox(page)
+  for (const [kind, x] of [['isoCube', 300], ['isoCylinder', 550], ['isoPyramid', 800]] as const) {
+    await page.getByTestId('more-shapes').click()
+    await page.getByTestId(`shape-${kind}`).click()
+    await page.mouse.click(b.x + x, b.y + 350)
+    await page.keyboard.type(kind === 'isoCube' ? 'Servidor' : kind === 'isoCylinder' ? 'Banco' : 'Meta')
+    await page.keyboard.press('Escape')
+  }
+  expect(await nodeCount(page)).toBe(3)
+  // 3 + 3 + 2 faces sombreadas.
+  expect(await page.locator('[data-testid=canvas] g.node path').count()).toBe(8)
+  await page.getByTestId('grid-toggle').click()
+  await expect(page.locator('#grid-iso')).toHaveCount(1)
+  await page.mouse.click(b.x + 50, b.y + 50)
+  await page.screenshot({ path: 'test-results/05-isometrico.png' })
+  await page.getByTestId('grid-toggle').click()
+  await expect(page.locator('#grid-iso')).toHaveCount(0)
+  await expect(page.locator('#grid-dots')).toHaveCount(0)
+})
+
 test('sem erros no console', async ({ page }) => {
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(e.message))

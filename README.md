@@ -8,9 +8,12 @@ Roda 100% no navegador — sem servidor, sem conta. Os diagramas ficam salvos no
 
 ## Recursos
 
-- **Quadro infinito**: rolar move, Ctrl + rolar (ou pinça) dá zoom, espaço + arrastar, grade com encaixe.
+- **Quadro infinito**: arrastar com o **botão direito** (ou do meio, ou espaço + arrastar) move o quadro;
+  rolar move, Ctrl + rolar (ou pinça) dá zoom; grade de pontos ou **isométrica**, com encaixe.
 - **Formas de fluxograma**: processo, decisão, início/fim, entrada/saída, documento, banco de dados,
   preparação, elipse, triângulo, nota adesiva e texto livre.
+- **Sólidos isométricos 3D**: cubo, cilindro e pirâmide com faces sombreadas automaticamente a partir
+  da cor escolhida (menu "Mais formas"); combinam com a grade isométrica.
 - **Conectores** ligados às formas (acompanham ao mover): cotovelo, reta ou curva; setas configuráveis
   nas duas pontas; rótulo ("Sim" / "Não"); tracejado.
   - Passe o mouse numa forma e **arraste o ponto azul** até outra forma.

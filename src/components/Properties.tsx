@@ -77,7 +77,8 @@ export default function Properties() {
           <li>Passe o mouse numa forma e <b>arraste o ponto azul</b> para conectar; <b>clique</b> nele para criar a próxima etapa.</li>
           <li>Duplo clique edita o texto; no vazio cria um texto.</li>
           <li>Crie <b>frames</b> (F) para montar os slides e clique em <b>Apresentar</b>.</li>
-          <li>Espaço + arrastar move o quadro; Ctrl + rolar dá zoom.</li>
+          <li>Botão direito + arrastar move o quadro; Ctrl + rolar dá zoom.</li>
+          <li>Formas 3D isométricas ficam em <b>Mais formas</b>; o botão de grade alterna para a grade isométrica.</li>
         </ul>
       </aside>
     )

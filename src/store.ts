@@ -34,6 +34,7 @@ export interface State {
   editingId: string | null
   snapToGrid: boolean
   showGrid: boolean
+  gridType: 'dots' | 'iso'
   past: Diagram[]
   future: Diagram[]
   presenting: number | null
@@ -51,6 +52,8 @@ export interface State {
   setEditing: (id: string | null) => void
   toggleSnap: () => void
   toggleGrid: () => void
+  /** Alterna pontos → isométrica → sem grade. */
+  cycleGrid: () => void
 
   /** Altera o documento registrando um passo de desfazer. */
   commit: (fn: (d: Diagram) => Diagram) => void
@@ -106,6 +109,7 @@ export const useStore = create<State>((set, get) => ({
   editingId: null,
   snapToGrid: true,
   showGrid: true,
+  gridType: 'dots',
   past: [],
   future: [],
   presenting: null,
@@ -151,6 +155,12 @@ export const useStore = create<State>((set, get) => ({
   setEditing: (editingId) => set({ editingId }),
   toggleSnap: () => set({ snapToGrid: !get().snapToGrid }),
   toggleGrid: () => set({ showGrid: !get().showGrid }),
+  cycleGrid: () => {
+    const { showGrid, gridType } = get()
+    if (!showGrid) set({ showGrid: true, gridType: 'dots' })
+    else if (gridType === 'dots') set({ gridType: 'iso' })
+    else set({ showGrid: false })
+  },
 
   commit: (fn) => {
     const { doc, past } = get()
