@@ -3,8 +3,18 @@
 Editor web de **diagramas e fluxogramas** em quadro infinito (no estilo Miro / Lucid / FigJam), com
 **modo apresentação**: os *frames* do quadro viram slides, com transição de câmera entre eles.
 
-Roda 100% no navegador — sem servidor, sem conta. Os diagramas ficam salvos no próprio navegador
-(localStorage) e podem ser exportados/importados em arquivo.
+Funciona **no navegador** e como **programa para Windows** (desktop). Sem servidor e sem conta: os
+diagramas ficam salvos no próprio computador e podem ser exportados/importados em arquivo.
+
+## Baixar (Windows)
+
+Na página de [Releases](https://github.com/RicardoBiazin/FluxDiag/releases/latest):
+
+- **`FluxDiag-Setup-x.y.z.exe`** — instalador (cria atalho no menu Iniciar; não pede administrador).
+- **`FluxDiag-x.y.z-portatil.exe`** — versão portátil, roda sem instalar (bom para pendrive).
+
+Os executáveis não são assinados digitalmente: na primeira vez o Windows SmartScreen pode avisar —
+clique em *Mais informações → Executar assim mesmo*.
 
 ## Recursos
 
@@ -27,9 +37,9 @@ Roda 100% no navegador — sem servidor, sem conta. Os diagramas ficam salvos no
 - **Exportar**: PNG, SVG, slides em PDF (pela janela de impressão) e arquivo `.fluxdiag.json`.
 - Vários diagramas guardados no navegador, modelos prontos, tema claro/escuro.
 
-## Usar
+## Usar a versão web localmente
 
-Dê dois cliques em **`FluxDiag.bat`**. Na primeira vez ele instala as dependências; depois gera o
+Com o código baixado, dê dois cliques em **`FluxDiag.bat`**. Na primeira vez ele instala as dependências; depois gera o
 site, sobe em http://127.0.0.1:5181 e abre o navegador. Fechar a janela preta encerra. Se já estiver
 rodando, ele só abre o navegador.
 
@@ -42,6 +52,8 @@ npm install
 npm run dev        # http://localhost:5180
 npm run build      # gera dist/ (site estático)
 npm run preview    # serve o dist/ em http://localhost:5181
+npm run desktop    # abre a versão desktop (Electron) a partir do código
+npm run dist:win   # gera o instalador e o portátil em release/
 ```
 
 ## Testes
@@ -49,6 +61,9 @@ npm run preview    # serve o dist/ em http://localhost:5181
 ```bash
 npm test           # unitários (vitest): geometria, modelo, store
 npm run test:e2e   # ponta a ponta (Playwright, Chromium): desenhar, conectar, salvar, apresentar, exportar
+npm run test:desktop                                   # mesma ideia, dirigindo a janela do Electron
+FLUXDIAG_EXE=release/win-unpacked/FluxDiag.exe npx playwright test -c playwright.desktop.config.ts
+                                                       # testa o executável já empacotado
 ```
 
 ## Estrutura
@@ -63,6 +78,7 @@ src/
   lib/templates.ts    modelos (exemplo de fluxo com 3 slides)
   store.ts            estado (zustand) com histórico de desfazer
   components/         Canvas, Toolbar, Properties, SlidesPanel, Presenter, ...
+electron/main.cjs     janela desktop (carrega o mesmo dist/, links externos vão para o navegador)
 ```
 
 ## Atalhos
@@ -81,3 +97,7 @@ src/
 | Setas (+Shift) | Mover 1 px (10 px) |
 | F5 | Apresentar |
 | ? | Lista de atalhos |
+
+## Licença
+
+[MIT](LICENSE) © 2026 Ricardo Biazin

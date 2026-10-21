@@ -14,5 +14,5 @@
     "resolveJsonModule": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "tests", "e2e"]
+  "include": ["src", "tests", "e2e", "e2e-desktop"]
 }
