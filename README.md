@@ -55,6 +55,7 @@ npm run preview    # serve o dist/ em http://localhost:5181
 npm run desktop    # abre a versão desktop (Electron) a partir do código
 npm run dist:win   # gera o instalador e o portátil em release/
 npm run release    # testa tudo, empacota, testa o .exe e publica a Release vX.Y.Z no GitHub
+npm run release -- --verificar   # só confere a versão e mostra o texto da Release
 ```
 
 ## Testes
