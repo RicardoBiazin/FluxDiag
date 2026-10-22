@@ -54,6 +54,7 @@ npm run build      # gera dist/ (site estático)
 npm run preview    # serve o dist/ em http://localhost:5181
 npm run desktop    # abre a versão desktop (Electron) a partir do código
 npm run dist:win   # gera o instalador e o portátil em release/
+npm run release    # testa tudo, empacota, testa o .exe e publica a Release vX.Y.Z no GitHub
 ```
 
 ## Testes
@@ -97,6 +98,13 @@ electron/main.cjs     janela desktop (carrega o mesmo dist/, links externos vão
 | Setas (+Shift) | Mover 1 px (10 px) |
 | F5 | Apresentar |
 | ? | Lista de atalhos |
+
+## Publicar uma versão
+
+1. Suba a versão no `package.json` e escreva a seção dela no [CHANGELOG.md](CHANGELOG.md).
+2. Faça o commit.
+3. Rode `npm run release`: ele recusa árvore suja ou versão já publicada, roda os testes web e
+   desktop, gera os `.exe`, cria a tag `vX.Y.Z` e publica a Release com o texto do CHANGELOG.
 
 ## Licença
 

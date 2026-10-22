@@ -1,7 +1,7 @@
 {
   "name": "fluxdiag",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,8 @@
     "build:desktop": "tsc --noEmit -p . && vite build --base ./",
     "desktop": "npm run build:desktop && node electron/run.cjs",
     "dist:win": "npm run build:desktop && electron-builder --win",
-    "test:desktop": "npm run build:desktop && playwright test -c playwright.desktop.config.ts"
+    "test:desktop": "npm run build:desktop && playwright test -c playwright.desktop.config.ts",
+    "release": "node scripts/release.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.62.0",
