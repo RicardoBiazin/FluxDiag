@@ -3,6 +3,11 @@
 Formato: uma seção por versão. O `npm run release` usa a seção da versão do `package.json`
 como texto da Release no GitHub.
 
+## [0.4.0] - 2026-10-23
+
+- Dependências atualizadas: React 19, TypeScript 7, Vitest 5, Vite 8.3 e Playwright 1.64.
+- Vulnerabilidades de dependências de teste corrigidas (`npm audit` sem achados).
+
 ## [0.3.1] - 2026-10-21
 
 - `npm run release`: um comando roda todos os testes, gera o instalador e o portátil, testa o
