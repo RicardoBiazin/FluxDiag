@@ -3,6 +3,11 @@
 Formato: uma seção por versão. O `npm run release` usa a seção da versão do `package.json`
 como texto da Release no GitHub.
 
+## [0.4.1] - 2026-10-24
+
+- electron-builder 26.18.0 (gerador do instalador e do portátil). Todas as dependências na
+  última versão e `npm audit` sem achados.
+
 ## [0.4.0] - 2026-10-23
 
 - Dependências atualizadas: React 19, TypeScript 7, Vitest 5, Vite 8.3 e Playwright 1.64.
